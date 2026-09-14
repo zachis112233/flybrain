@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070a12">
+  <meta name="description" content="A full Drosophila connectome plays Snake with fixed sensory and motor readouts.">
+  <title>Connectome Snake | FlyBrain</title>
+  <link rel="stylesheet" href="./snake.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <a class="eyebrow" href="../">FlyBrain / experiment 01</a>
+        <h1>Connectome <span>Snake</span></h1>
+        <p class="lede">139,255 neurons. 2.7 million synapses. One fruit-fly brain choosing every turn.</p>
+      </div>
+      <div class="status-pill" id="status-pill" aria-live="polite">
+        <span class="status-light" id="status-light"></span>
+        <span id="status-text">Waiting to load connectome</span>
+      </div>
+    </header>
+
+    <main class="experiment-grid">
+      <section class="panel board-panel" aria-labelledby="arena-title">
+        <div class="panel-heading board-heading">
+          <div>
+            <p class="section-label">Closed-loop arena</p>
+            <h2 id="arena-title">Live behavior</h2>
+          </div>
+          <div class="score-strip" aria-label="Game statistics">
+            <div><span>Score</span><strong id="score">0</strong></div>
+            <div><span>Length</span><strong id="length">4</strong></div>
+            <div><span>Moves</span><strong id="moves">0</strong></div>
+            <div><span>Games</span><strong id="games">0</strong></div>
+          </div>
+        </div>
+
+        <div class="arena-frame">
+          <canvas id="board" width="640" height="640" role="img" aria-label="Snake game board controlled by the fly connectome"></canvas>
+          <div class="arena-overlay" id="arena-overlay">
+            <div class="loader" aria-hidden="true"></div>
+            <strong id="overlay-title">Loading the fly brain</strong>
+            <span id="overlay-detail">Fetching 139,255 neurons and 2.7M connections</span>
+          </div>
+          <div class="tick-badge"><span>neural tick</span><b id="tick-count">0</b></div>
+        </div>
+
+        <div class="controls" aria-label="Game controls">
+          <button class="primary" id="pause-button" type="button" disabled>Pause game</button>
+          <button id="step-button" type="button" disabled>One brain move</button>
+          <button id="new-button" type="button" disabled>New game</button>
+          <button id="reset-button" type="button" disabled>Reset brain</button>
+        </div>
+
+        <div class="settings">
+          <label>
+            <span>Neural ticks per move</span>
+            <select id="window-select">
+              <option value="3">3 · twitchy</option>
+              <option value="5" selected>5 · standard</option>
+              <option value="8">8 · deliberate</option>
+            </select>
+          </label>
+          <label>
+            <span>Food sequence seed</span>
+            <input id="seed-input" type="number" value="783" step="1">
+          </label>
+          <label class="check-setting">
+            <input id="restart-check" type="checkbox" checked>
+            <span>Auto-restart after collision</span>
+          </label>
+        </div>
+      </section>
+
+      <aside class="lab-column">
+        <section class="panel decision-panel" aria-labelledby="decision-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-label">Current decision</p>
+              <h2 id="decision-title">Brain readout</h2>
+            </div>
+            <div class="decision-glyph" id="decision-glyph" aria-hidden="true">↑</div>
+          </div>
+
+          <div class="chosen-line">
+            <span>Selected action</span>
+            <strong id="chosen-action">Warming up</strong>
+            <small id="decision-margin">collecting spikes</small>
+          </div>
+
+          <h3>Encoded sensory input</h3>
+          <div class="lane-table" aria-label="Sensory channel strengths">
+            <div class="lane-head"><span>Lane</span><span>Food</span><span>Obstacle</span></div>
+            <div class="lane-row">
+              <b>Left</b>
+              <div class="mini-meter"><i id="food-left-bar"></i></div>
+              <div class="mini-meter danger"><i id="danger-left-bar"></i></div>
+              <output id="input-left">0 / 0</output>
+            </div>
+            <div class="lane-row">
+              <b>Forward</b>
+              <div class="mini-meter"><i id="food-forward-bar"></i></div>
+              <div class="mini-meter danger"><i id="danger-forward-bar"></i></div>
+              <output id="input-forward">0 / 0</output>
+            </div>
+            <div class="lane-row">
+              <b>Right</b>
+              <div class="mini-meter"><i id="food-right-bar"></i></div>
+              <div class="mini-meter danger"><i id="danger-right-bar"></i></div>
+              <output id="input-right">0 / 0</output>
+            </div>
+          </div>
+
+          <h3>Observed output spikes</h3>
+          <div class="readouts">
+            <div class="readout" data-command="left">
+              <span>Left</span>
+              <div class="output-meter"><i id="output-left-bar"></i></div>
+              <output id="output-left">0.000%</output>
+            </div>
+            <div class="readout" data-command="forward">
+              <span>Forward</span>
+              <div class="output-meter"><i id="output-forward-bar"></i></div>
+              <output id="output-forward">0.000%</output>
+            </div>
+            <div class="readout" data-command="right">
+              <span>Right</span>
+              <div class="output-meter"><i id="output-right-bar"></i></div>
+              <output id="output-right">0.000%</output>
+            </div>
+          </div>
+          <p class="microcopy">Largest normalized rate wins. Exact ties continue forward. A fatal choice is never vetoed.</p>
+        </section>
+
+        <section class="panel telemetry-panel" aria-labelledby="telemetry-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-label">Connectome telemetry</p>
+              <h2 id="telemetry-title">Whole-brain simulation</h2>
+            </div>
+          </div>
+          <dl class="telemetry-grid">
+            <div><dt>Neurons</dt><dd id="neuron-count">—</dd></div>
+            <div><dt>Synapses</dt><dd id="edge-count">—</dd></div>
+            <div><dt>Firing / tick</dt><dd id="firing-count">—</dd></div>
+            <div><dt>Active groups</dt><dd id="active-groups">—</dd></div>
+            <div><dt>Tick compute</dt><dd id="tick-time">—</dd></div>
+            <div><dt>Readout cells</dt><dd id="readout-count">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="panel protocol-panel" aria-labelledby="protocol-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-label">Experimental contract</p>
+              <h2 id="protocol-title">No hidden pilot</h2>
+            </div>
+          </div>
+          <div class="badges">
+            <span>No pathfinding</span>
+            <span>No safety veto</span>
+            <span>No training</span>
+            <span>Fixed cohorts</span>
+          </div>
+          <p>Food and nearby obstacles stimulate deterministic sensory cohorts. Activity propagates through the unmodified connectome; fixed descending and central-complex cohorts are read as relative left, forward, and right actions.</p>
+          <details>
+            <summary>Exact neural mapping</summary>
+            <dl class="mapping-list">
+              <div><dt>Food bearing</dt><dd>VIS_R1R6</dd></div>
+              <div><dt>Food odor</dt><dd>OLF_ORN_FOOD</dd></div>
+              <div><dt>Obstacle rays</dt><dd>OLF_ORN_DANGER + MECH_BRISTLE</dd></div>
+              <div><dt>Tonic arousal</dt><dd>CX_EPG</dd></div>
+              <div><dt>Action readout</dt><dd>GNG_DESC + CX_PFN + CX_HDELTA + CX_FC</dd></div>
+              <div><dt>Food contact</dt><dd>GUS_GRN_SWEET pulse</dd></div>
+            </dl>
+          </details>
+        </section>
+
+        <section class="panel log-panel" aria-labelledby="log-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-label">Audit trail</p>
+              <h2 id="log-title">Last decisions</h2>
+            </div>
+          </div>
+          <div class="log-scroll">
+            <table>
+              <thead><tr><th>#</th><th>Choice</th><th>L / F / R spike rate</th><th>Result</th></tr></thead>
+              <tbody id="decision-log">
+                <tr class="empty-row"><td colspan="4">Waiting for the first neural decision</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer>
+      <span>FlyWire FAFB v783 data bundled with this repository</span>
+      <a href="./README.md">Method and limitations</a>
+    </footer>
+  </div>
+
+  <script src="./snake-core.js"></script>
+  <script src="./snake-app.js"></script>
+</body>
+</html>

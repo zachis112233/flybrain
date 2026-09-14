@@ -6,7 +6,8 @@
   "scripts": {
     "caretaker": "node server/caretaker.js",
     "query-log": "bash tools/query-log.sh",
-    "migrate-logs": "node server/migrate-logs.js"
+    "migrate-logs": "node server/migrate-logs.js",
+    "test:snake": "node tests/snake-core.test.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
