@@ -6,7 +6,13 @@ The fly is not scripted. Behavior emerges from signal propagation through weight
 
 ## Usage
 
-Open `index.html` in a browser (or visit the hosted version). The fly loads the full connectome and begins exploring. Use the toolbar to interact:
+Serve the repository root over HTTP, then open the main habitat:
+
+    python -m http.server 8000
+
+    http://localhost:8000/
+
+Use the toolbar to interact:
 
 - **Feed** -- click to place food. The fly seeks and eats it when hungry.
 - **Touch** -- click on the fly. Head, thorax, abdomen, and legs trigger different responses.
@@ -16,13 +22,23 @@ Open `index.html` in a browser (or visit the hosted version). The fly loads the 
 
 The bottom panel shows all 139K neurons firing in real time (WebGL), grouped by region: Sensory, Central, Drives, Motor.
 
+## Connectome Snake
+
+The [Connectome Snake experiment](snake/) lets the same full connectome choose every move in Snake. It uses fixed, visible sensory and readout cohorts with no pathfinding, safety override, training, or reward-based weight changes.
+
+After starting the local server, open:
+
+    http://localhost:8000/snake/
+
+See [snake/README.md](snake/README.md) for the exact neural mapping, limitations, and controls.
+
 ## Data Source
 
 Connectome data from the FlyWire Whole-Brain Connectome:
 
 > Dorkenwald, S., Matsliah, A., Sterling, A.R. *et al.* Neuronal wiring diagram of an adult brain. *Nature* **634**, 124--138 (2024). https://doi.org/10.1038/s41586-024-07558-y
 
-The binary connectome file (`data/neuron_meta.bin.gz`) is derived from the [FlyWire Codex](https://codex.flywire.ai) public dataset (FAFB v783). Neurons are classified into functional groups (sensory, central, drives, motor) based on FlyWire cell type annotations.
+The binary connectome file (data/connectome.bin.gz) is derived from the [FlyWire Codex](https://codex.flywire.ai) public dataset (FAFB v783). Neurons are classified into functional groups (sensory, central, drives, motor) based on FlyWire cell type annotations.
 
 ## Origin
 
